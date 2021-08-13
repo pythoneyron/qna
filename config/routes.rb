@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
   resources :questions, shallow: true do
-    resource :answers
+    resources :answers
   end
 end
