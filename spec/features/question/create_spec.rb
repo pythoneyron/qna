@@ -39,29 +39,9 @@ feature 'User can create question', %q{
       visit questions_path
 
       questions.each do |question|
-        expect(page).to have_content question.id
         expect(page).to have_content question.title
       end
     end
-  end
-
-  scenario 'Unauthenticated user tries view list the questions' do
-    questions
-
-    visit questions_path
-
-    questions.each do |question|
-      expect(page).to have_content question.id
-      expect(page).to have_content question.title
-      expect(page).to have_content question.body
-    end
-  end
-
-  scenario 'Unauthenticated user tries asks a question' do
-    visit questions_path
-    click_on 'Ask question'
-
-    expect(page).to have_content 'You need to sign in or sign up before continuing.'
   end
 
 end

@@ -5,45 +5,6 @@ RSpec.describe AnswersController, type: :controller do
   let(:answer) { FactoryBot.create(:answer, question: question, author: user) }
   let(:user) { create(:user) }
 
-  describe 'GET #index' do
-    let(:answers) { FactoryBot.create_list(:answer, 2, question: question ) }
-
-    before { get :index, params: { question_id: question } }
-
-    it 'populates an array of all answers' do
-      expect(assigns(:answers)).to match_array(answers)
-    end
-
-    it 'renders index view' do
-      expect(response).to render_template :index
-    end
-  end
-
-  describe 'GET #show' do
-    before { get :show, params: { question_id: question, id: answer } }
-
-    it 'assigns the requested answer to @answer' do
-      expect(assigns(:answer)).to eq answer
-    end
-
-    it 'renders show view' do
-      expect(response).to render_template :show
-    end
-  end
-
-  describe 'GET #new' do
-    before { login (user) }
-    before { get :new, params: { question_id: question } }
-
-    it 'assigns a new answer to @answer' do
-      expect(assigns(:answer)).to be_a_new(Answer)
-    end
-
-    it 'renders new view' do
-      expect(response).to render_template :new
-    end
-  end
-
   describe 'GET #edit' do
     before { login (user) }
     before { get :edit, params: { question_id: question, id: answer } }
@@ -76,7 +37,7 @@ RSpec.describe AnswersController, type: :controller do
       end
       it 're-render new view' do
         post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }
-        expect(response).to render_template :new
+        expect(response).to render_template('questions/show')
       end
     end
   end
@@ -112,7 +73,7 @@ RSpec.describe AnswersController, type: :controller do
       end
 
       it 're-render edit view' do
-        expect(response).to render_template :edit
+        expect(response).to render_template('questions/show')
       end
     end
   end

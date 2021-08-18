@@ -10,12 +10,14 @@ p= question.body
 - if current_user&.author?(@question)
   = link_to 'Delete the question', question_path(@question), method: :delete
 
-- for answer in question.answers do
-  div
-    = answer.body
-    br
-      - if current_user&.author?(answer)
-        = link_to 'Delete the answer', answer_path(answer), method: :delete
+- if @question.answers.present?
+  - question.answers.each do |answer|
+    div
+      - if answer.persisted?
+        = answer.body
+        br
+          - if current_user&.author?(answer)
+            = link_to 'Delete the answer', answer_path(answer), method: :delete
 
 = render 'answers/form', question: question
 

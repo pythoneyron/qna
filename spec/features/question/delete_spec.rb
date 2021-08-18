@@ -12,6 +12,8 @@ feature 'Author can delete his question', "
   scenario 'Author can delete his question' do
     sign_in(user_author)
     visit question_path(question)
+    expect(page).to have_content question.title
+
     click_on 'Delete the question'
     expect(page).to_not have_content question.title
   end
