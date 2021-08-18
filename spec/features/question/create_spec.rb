@@ -7,7 +7,7 @@ feature 'User can create question', %q{
 } do
 
   given(:user) { create(:user) }
-  given(:questions) { create_list(:question, 5) }
+  given(:questions) { create_list(:question, 5, author: user) }
 
   describe 'Authenticated user' do
     background do
@@ -41,7 +41,6 @@ feature 'User can create question', %q{
       questions.each do |question|
         expect(page).to have_content question.id
         expect(page).to have_content question.title
-        expect(page).to have_content question.body
       end
     end
   end

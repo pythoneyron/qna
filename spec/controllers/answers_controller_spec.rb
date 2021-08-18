@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
-  let(:question) { FactoryBot.create(:question) }
-  let(:answer) { FactoryBot.create(:answer, question: question ) }
+  let(:question) { FactoryBot.create(:question, author: user) }
+  let(:answer) { FactoryBot.create(:answer, question: question, author: user) }
+  let(:user) { create(:user) }
 
   describe 'GET #index' do
     let(:answers) { FactoryBot.create_list(:answer, 2, question: question ) }
@@ -31,6 +32,7 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'GET #new' do
+    before { login (user) }
     before { get :new, params: { question_id: question } }
 
     it 'assigns a new answer to @answer' do
@@ -43,6 +45,7 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'GET #edit' do
+    before { login (user) }
     before { get :edit, params: { question_id: question, id: answer } }
 
     it 'assigns the requested answer to @answer' do
@@ -55,14 +58,15 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'POST #create' do
+    before { login (user) }
     context 'with valid attributes' do
       it 'save a new answers in the database' do
         expect { post :create, params: { question_id: question, answer: attributes_for(:answer) } }.to change(question.answers, :count).by(1)
       end
 
-      it 'redirect to show view' do
+      it 'redirect to show view question' do
         post :create, params: { question_id: question, answer: attributes_for(:answer) }
-        expect(response).to redirect_to assigns(:answer)
+        expect(response).to redirect_to assigns(:question)
       end
     end
 
@@ -78,6 +82,7 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'PATCH #update' do
+    before { login (user) }
     context 'with valid attributes' do
       it 'assigns the requested answer to @answer' do
         patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }
@@ -113,15 +118,44 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let!(:answer) { FactoryBot.create(:answer, question: question ) }
+    let!(:answer) { create(:answer, question: question, author: user) }
 
-    it 'deletes the answer' do
-      expect { delete :destroy, params: { question_id: question, id: answer } }.to change(Answer, :count).by(-1)
+    context 'Author' do
+      before { login(user) }
+
+      it 'deletes the answer' do
+        expect { delete :destroy, params: { id: answer } }.to change(Answer, :count).by(-1)
+      end
+
+      it 'redirect to the question' do
+        delete :destroy, params: { id: answer }
+        expect(response).to redirect_to question_path(question)
+      end
     end
 
-    it 'redirect to index' do
-      delete :destroy, params: { question_id: question, id: answer }
-      expect(response).to redirect_to questions_path
+    context 'Not author' do
+      let(:not_author) { create(:user) }
+      before { login(not_author) }
+
+      it 'try delete the question' do
+        expect { delete :destroy, params: { id: answer } }.to_not change(Answer, :count)
+      end
+
+      it 'redirect to the question' do
+        delete :destroy, params: { id: answer }
+        expect(response).to redirect_to question_path(question)
+      end
+    end
+
+    context 'Unauthenticated user' do
+      it 'tries to delete answer' do
+        expect { delete :destroy, params: { id: answer } }.to_not change(Answer, :count)
+      end
+
+      it 'redirects to login page' do
+        delete :destroy, params: { id: answer }
+        expect(response).to redirect_to new_user_session_path
+      end
     end
   end
 
