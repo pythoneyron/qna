@@ -37,7 +37,7 @@ RSpec.describe AnswersController, type: :controller do
       end
       it 're-render new view' do
         post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }
-        expect(response).to render_template('questions/show')
+        expect(response).to redirect_to assigns(:question)
       end
     end
   end
@@ -69,7 +69,7 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not change answer' do
         answer.reload
 
-        expect(answer.body).to eq 'MyText'
+        expect(answer.body).to eq 'MyAnswerText'
       end
 
       it 're-render edit view' do

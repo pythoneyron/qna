@@ -58,7 +58,6 @@ feature 'User can register and auth', %q{
     visit questions_path
 
     questions.each do |question|
-      expect(page).to have_content question.id
       expect(page).to have_content question.title
       expect(page).to have_content question.body
     end

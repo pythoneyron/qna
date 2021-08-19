@@ -47,10 +47,6 @@ feature 'User can create answer', %q{
       expect(page).to have_content 'New answer1'
       expect(page).to have_content 'New answer2'
     end
-
-    scenario 'create an answer' do
-      expect(page).to_not have_content 'To answer'
-    end
   end
 
   describe 'Unauthenticated user' do
