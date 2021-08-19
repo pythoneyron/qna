@@ -1,4 +1,6 @@
 div
+  = render 'shared/errors', resource: @answer
+div
   = form_with model: question, local: true do |form|
     div
       = form.label :title
