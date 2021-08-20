@@ -1,5 +1,8 @@
 div
-  = form_with model: [question, question.answers.new], local: true do |form|
+  .answer-errors
+    = render 'shared/errors', resource: @answer
+div
+  = form_with model: [@question, @answer], local: false do |form|
     div
       = form.label :body
       = form.text_area :body

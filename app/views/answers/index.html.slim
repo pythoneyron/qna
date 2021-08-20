@@ -1,3 +1,4 @@
-- for answer in @answers do
-  p = answer.body
-  br
+- if @answers
+  - @answers.each do |answer|
+    p = answer.body
+    br

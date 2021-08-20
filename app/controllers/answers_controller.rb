@@ -9,11 +9,7 @@ class AnswersController < ApplicationController
   def create
     @answer = question.answers.create(answer_params)
     answer.author = current_user
-    if answer.save
-      redirect_to answer.question, notice: 'Your answer successfully created.'
-    else
-      redirect_to answer.question, notice: "Your answer can't be blank."
-    end
+    answer.save
   end
 
   def update
