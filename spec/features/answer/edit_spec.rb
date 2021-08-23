@@ -11,7 +11,7 @@ feature 'User can edit his answer', %q{
   given!(:answer) { create(:answer, question: question, author: user) }
 
   describe 'Authenticated user' do
-    scenario 'edits his answer' do
+    scenario 'edits his answer', js: true do
       sign_in(user)
       visit(question_path(question))
 
@@ -22,7 +22,7 @@ feature 'User can edit his answer', %q{
         click_on('Save')
 
         expect(page).to_not(have_content(answer.body))
-        expect(page).to(have_content('edited answer'))
+        expect(page).to(have_content('Edited answer'))
         expect(page).to_not(have_selector('textarea'))
       end
     end
