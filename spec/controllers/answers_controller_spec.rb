@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
+  let(:not_author) { create(:user) }
   let(:question) { FactoryBot.create(:question, author: user) }
   let(:answer) { FactoryBot.create(:answer, question: question, author: user) }
 
@@ -39,35 +40,55 @@ RSpec.describe AnswersController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    before { login (user) }
-    context 'with valid attributes' do
-      it 'assigns the requested answer to @answer' do
-        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer), format: :js  }
-        expect(assigns(:answer)).to eq answer
+    context 'Author' do
+      before { login (user) }
+
+      context 'with valid attributes' do
+        it 'assigns the requested answer to @answer' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer), format: :js  }
+          expect(assigns(:answer)).to eq answer
+        end
+
+        it 'changes answer attributes' do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          answer.reload
+          expect(answer.body).to eq 'new body'
+        end
+
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          expect(response).to render_template(:update)
+        end
       end
 
-      it 'changes answer attributes' do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
-        answer.reload
-        expect(answer.body).to eq 'new body'
-      end
+      context 'with invalid attributes' do
+        it 'does not change answer attributes' do
+          expect do
+            patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          end.to_not change(answer, :body)
+        end
 
-      it 'renders update view' do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
-        expect(response).to render_template(:update)
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          expect(response).to render_template(:update)
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      it 'does not change answer attributes' do
-        expect do
-          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
-        end.to_not change(answer, :body)
+    context 'Not author' do
+      before { login(not_author) }
+      it 'can not edit another answers' do
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+        answer.reload
+        expect(answer.body).to eq answer.body
       end
+    end
 
-      it 'renders update view' do
-        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
-        expect(response).to render_template(:update)
+    context 'Unauthenticated user' do
+      it 'can not edit answers' do
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+        answer.reload
+        expect(answer.body).to eq answer.body
       end
     end
   end
@@ -89,7 +110,6 @@ RSpec.describe AnswersController, type: :controller do
     end
 
     context 'Not author' do
-      let(:not_author) { create(:user) }
       before { login(not_author) }
 
       it 'try delete the question' do

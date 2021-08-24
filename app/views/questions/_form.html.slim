@@ -1,8 +1,4 @@
 div
-  .answer-errors
-    = render 'shared/errors', resource: question
-
-div
   = form_with model: question, local: false do |form|
     div
       = form.label :title

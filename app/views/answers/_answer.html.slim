@@ -1,10 +1,11 @@
 - if answer.persisted?
   p= answer.body
+
   - if current_user&.author?(answer)
     p= link_to 'Delete the answer', answer_path(answer), method: :delete
     p= link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
 
-    = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |f|
-      = f.label :body, 'Your answer'
-      = f.text_area :body
-      = f.submit 'Save'
+    = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |form|
+      = form.label :body, 'Your answer'
+      = form.text_area :body
+      = form.submit 'Save'

@@ -1,11 +1,8 @@
 p= link_to 'Создать вопрос', new_question_path
 p= link_to 'Создать ответ', new_question_answer_path(question)
 
-h1= question.title
-p= question.body
-
-- if current_user&.author?(question)
-  = link_to 'Delete the question', question_path(question), method: :delete
+.question
+ = render question
 
 .answers
   = render question.answers

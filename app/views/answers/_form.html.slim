@@ -1,7 +1,4 @@
-div
-  .answer-errors
-    = answer.body
-    = render 'shared/errors', resource: answer
+.answer-errors
 
 div
   = form_with model: [question, answer], class: 'new-answer', local: false do |form|
@@ -9,4 +6,4 @@ div
       = form.label :body
       = form.text_area :body
 
-    = form.submit "Save"
+    = form.submit "Create"
