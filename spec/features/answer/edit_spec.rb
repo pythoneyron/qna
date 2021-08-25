@@ -43,7 +43,7 @@ feature 'User can edit his answer', %q{
       end
     end
 
-    scenario "tries to edit other user's question" do
+    scenario "tries to edit other user's answer" do
       sign_in(user)
       visit(question_path(question))
 
