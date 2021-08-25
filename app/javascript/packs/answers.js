@@ -6,3 +6,9 @@ $(document).on('turbolinks:load', function() {
         $('form#edit-answer-' + answerId).show()
     });
 });
+
+$(document).on('ajax:success', '.destroy-answer-link', function(e){
+    let res = e.originalEvent.detail[0].notice;
+    $('.answers').html(res);
+    $(this).parentsUntil('.answers').remove();
+});

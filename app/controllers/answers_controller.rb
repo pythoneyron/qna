@@ -20,9 +20,15 @@ class AnswersController < ApplicationController
   def destroy
     if current_user.author?(answer)
       answer.destroy
-      redirect_to question_path(answer.question), notice: 'Your answer successfully deleted.'
+      message = { notice: 'Your answer successfully deleted.' }
     else
-      redirect_to question_path(answer.question), notice: 'You are not the author'
+      message = { notice: 'You are not the author' }
+    end
+
+    respond_to do |format|
+      format.json do
+        render json: message.to_json
+      end
     end
   end
 

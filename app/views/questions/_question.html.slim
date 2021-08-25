@@ -2,7 +2,7 @@ h1= question.title
 p= question.body
 
 - if current_user&.author?(question)
-  p= link_to 'Delete the question', question_path(question), method: :delete
+  p= link_to 'Delete the question', question_path(question), method: :delete, data: { question_id: question.id }
   p= link_to 'Edit the question', '#', class: 'edit-question-link', data: { question_id: question.id }
 
 = form_with model: question, class: 'hidden', html: { id: "edit-question-#{question.id}" }, local: false do |form|
