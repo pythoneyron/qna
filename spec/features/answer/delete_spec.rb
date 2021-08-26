@@ -5,6 +5,7 @@ feature 'Author can delete his answer', "
   As an authenticated user
   I'd like to be able to delete my answer
 " do
+
   given(:user_author) { create(:user) }
   given(:user) { create(:user) }
   given(:question) { create(:question, author: user_author) }
@@ -18,7 +19,7 @@ feature 'Author can delete his answer', "
 
       click_on 'Delete the answer'
       expect(page).to have_content('Your answer successfully deleted.')
-      expect(page).to_not have_content answer.body
+      expect(page).to_not have_content(answer.body)
     end
 
     scenario "user can't destroy other user's answer", js: true do
