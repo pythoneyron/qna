@@ -43,7 +43,7 @@ feature 'User can edit his answer', %q{
       end
     end
 
-    scenario 'set answer as best' do
+    scenario 'set answer as best', js: true do
       sign_in(user_author)
       visit question_path(question)
 

@@ -34,11 +34,15 @@ class AnswersController < ApplicationController
 
   def mark_as_best
     answer = Answer.find(params[:answer_id])
-    answer.question.update(best_answer_id: answer.id)
+    question = answer.question
+    question.update(best_answer_id: answer.id)
+
+    @best_answer = answer
+    @other_answers = question.answers.where.not(id: question.best_answer)
 
     respond_to do |format|
-      format.json do
-        render json: 'Success'
+      format.js do
+        render :template => 'answers/mark_as_best.js.erb'
       end
     end
   end
