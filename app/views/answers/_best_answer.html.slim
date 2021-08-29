@@ -1,0 +1,15 @@
+.data-best-answer
+  .data-answer
+    - if resource&.persisted?
+      p= resource.body
+      p= 'The best answer'
+
+      - if current_user&.author?(resource)
+        p= link_to 'Delete the answer', answer_path(resource), class: 'destroy-answer-link', method: :delete,
+                data: { answer_id: resource.id, remote: true, type: 'json' }
+        p= link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: resource.id }
+
+        = form_with model: resource, class: 'hidden', html: { id: "edit-answer-#{resource.id}" }, local: false do |form|
+          = form.label :body, 'Your answer'
+          = form.text_area :body
+          = form.submit 'Save'

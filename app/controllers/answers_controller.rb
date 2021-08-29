@@ -32,6 +32,17 @@ class AnswersController < ApplicationController
     end
   end
 
+  def mark_as_best
+    answer = Answer.find(params[:answer_id])
+    answer.question.update(best_answer_id: answer.id)
+
+    respond_to do |format|
+      format.json do
+        render json: 'Success'
+      end
+    end
+  end
+
   private
 
   def answer

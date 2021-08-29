@@ -6,7 +6,8 @@
       p= link_to 'Delete the answer', answer_path(answer), class: 'destroy-answer-link', method: :delete,
               data: { answer_id: answer.id, remote: true, type: 'json'}
       p= link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
-      p= link_to 'Mark as best', '#', class: 'mark-best-answer-link', data: { answer_id: answer.id }
+      p= link_to 'Mark as best', answer_mark_as_best_path(answer), class: 'mark-best-answer-link',
+              data: { answer_id: answer.id, remote: true, type: 'json' }
 
       = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |form|
         = form.label :body, 'Your answer'

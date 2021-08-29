@@ -134,4 +134,21 @@ RSpec.describe AnswersController, type: :controller do
     end
   end
 
+  describe 'GET #mark_as_best' do
+    context 'Author' do
+      before { login(user) }
+
+      it 'mark as best' do
+        expect { get :edit, params: { id: answer }, format: :js }.to eq answer
+      end
+
+    end
+
+    context 'Not author' do
+      it 'try delete the question' do
+        expect { get :edit, params: { id: answer }, format: :js }.to_not change(Answer)
+      end
+    end
+  end
+
 end
