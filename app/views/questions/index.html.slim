@@ -1,6 +1,4 @@
 p= link_to 'Ask question', new_question_path
 
-- for question in @questions do
-    p= question.title
-    p= question.body
-    br
+- @questions.each do |question|
+  p= link_to question.title, question_path(question)

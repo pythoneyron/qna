@@ -1,20 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
+  let(:user) { create(:user) }
+  let(:not_author) { create(:user) }
   let(:question) { FactoryBot.create(:question, author: user) }
   let(:answer) { FactoryBot.create(:answer, question: question, author: user) }
-  let(:user) { create(:user) }
 
   describe 'GET #edit' do
     before { login (user) }
-    before { get :edit, params: { question_id: question, id: answer } }
+    before { get :edit, params: { question_id: question, id: answer }, format: :js }
 
     it 'assigns the requested answer to @answer' do
       expect(assigns(:answer)).to eq answer
-    end
-
-    it 'renders edit view' do
-      expect(response).to render_template :edit
     end
   end
 
@@ -22,58 +19,76 @@ RSpec.describe AnswersController, type: :controller do
     before { login (user) }
     context 'with valid attributes' do
       it 'save a new answers in the database' do
-        expect { post :create, params: { question_id: question, answer: attributes_for(:answer) } }.to change(question.answers, :count).by(1)
+        expect { post :create, params: { question_id: question, answer: attributes_for(:answer) }, format: :js }.to change(question.answers, :count).by(1)
       end
 
-      it 'redirect to show view question' do
-        post :create, params: { question_id: question, answer: attributes_for(:answer) }
-        expect(response).to redirect_to assigns(:question)
+      it 'render create template' do
+        post :create, params: { question_id: question, answer: attributes_for(:answer), format: :js }
+        expect(response).to render_template(:create)
       end
     end
 
     context 'with invalid attributes' do
       it 'does not save the answer' do
-        expect { post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) } }.to_not change(Answer, :count)
+        expect { post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }, format: :js }.to_not change(Answer, :count)
       end
-      it 're-render new view' do
-        post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }
-        expect(response).to redirect_to assigns(:question)
+      it 'render create template' do
+        post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid), format: :js }
+        expect(response).to render_template(:create)
       end
     end
   end
 
   describe 'PATCH #update' do
-    before { login (user) }
-    context 'with valid attributes' do
-      it 'assigns the requested answer to @answer' do
-        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }
-        expect(assigns(:answer)).to eq answer
+    context 'Author' do
+      before { login (user) }
+
+      context 'with valid attributes' do
+        it 'assigns the requested answer to @answer' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer), format: :js  }
+          expect(assigns(:answer)).to eq answer
+        end
+
+        it 'changes answer attributes' do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          answer.reload
+          expect(answer.body).to eq 'new body'
+        end
+
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          expect(response).to render_template(:update)
+        end
       end
 
-      it 'changes answer attributes' do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }
-        answer.reload
+      context 'with invalid attributes' do
+        it 'does not change answer attributes' do
+          expect do
+            patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          end.to_not change(answer, :body)
+        end
 
-        expect(answer.body).to eq 'new body'
+        it 'renders update view' do
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) }, format: :js
+          expect(response).to render_template(:update)
+        end
       end
-
-      it 'redirect to update answer' do
-        patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }
-        expect(response).to redirect_to answer
-      end
-
     end
 
-    context 'with invalid attributes' do
-      before { patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer, :invalid) } }
-      it 'does not change answer' do
+    context 'Not author' do
+      before { login(not_author) }
+      it 'can not edit another answers' do
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
         answer.reload
-
-        expect(answer.body).to eq 'MyAnswerText'
+        expect(answer.body).to eq answer.body
       end
+    end
 
-      it 're-render edit view' do
-        expect(response).to render_template('questions/show')
+    context 'Unauthenticated user' do
+      it 'can not edit answers' do
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+        answer.reload
+        expect(answer.body).to eq answer.body
       end
     end
   end
@@ -95,7 +110,6 @@ RSpec.describe AnswersController, type: :controller do
     end
 
     context 'Not author' do
-      let(:not_author) { create(:user) }
       before { login(not_author) }
 
       it 'try delete the question' do
@@ -116,6 +130,23 @@ RSpec.describe AnswersController, type: :controller do
       it 'redirects to login page' do
         delete :destroy, params: { id: answer }
         expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+  describe 'GET #mark_as_best' do
+    context 'Author' do
+      before { login(user) }
+
+      it 'mark as best' do
+        expect { get :edit, params: { id: answer }, format: :js }.to eq answer
+      end
+
+    end
+
+    context 'Not author' do
+      it 'try delete the question' do
+        expect { get :edit, params: { id: answer }, format: :js }.to_not change(Answer)
       end
     end
   end

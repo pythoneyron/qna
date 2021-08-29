@@ -9,27 +9,41 @@ class AnswersController < ApplicationController
   def create
     @answer = question.answers.create(answer_params)
     answer.author = current_user
-    if answer.save
-      redirect_to answer.question, notice: 'Your answer successfully created.'
-    else
-      redirect_to answer.question, notice: "Your answer can't be blank."
-    end
+    answer.save
   end
 
   def update
-    if answer.update(answer_params)
-      redirect_to answer
-    else
-      render 'questions/show'
-    end
+    answer.update(answer_params)
+    @question = answer.question
   end
 
   def destroy
     if current_user.author?(answer)
       answer.destroy
-      redirect_to question_path(answer.question), notice: 'Your answer successfully deleted.'
+      message = { notice: 'Your answer successfully deleted.' }
     else
-      redirect_to question_path(answer.question), notice: 'You are not the author'
+      message = { notice: 'You are not the author' }
+    end
+
+    respond_to do |format|
+      format.json do
+        render json: message.to_json
+      end
+    end
+  end
+
+  def mark_as_best
+    answer = Answer.find(params[:answer_id])
+    question = answer.question
+    question.update(best_answer_id: answer.id)
+
+    @best_answer = answer
+    @other_answers = question.answers.where.not(id: question.best_answer)
+
+    respond_to do |format|
+      format.js do
+        render :template => 'answers/mark_as_best.js.erb'
+      end
     end
   end
 

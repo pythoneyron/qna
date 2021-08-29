@@ -15,31 +15,27 @@ feature 'User can create answer', %q{
       visit question_path(question)
     end
 
-    scenario 'write an answer to the question' do
+    scenario 'create an answer', js: true do
       fill_in 'Body', with: 'New answer'
-      click_on 'To answer'
+      click_on 'Create'
 
-      expect(page).to have_content 'Your answer successfully created.'
       expect(page).to have_content 'New answer'
     end
 
-    scenario 'create an answer with errors to the question' do
-      click_on 'To answer'
-      expect(page).to have_content "Your answer can't be blank."
+    scenario 'creates answer with errors', js: true do
+      click_on 'Create'
+      expect(page).to have_content "Body can't be blank"
     end
 
-    scenario 'view the question and answers to it' do
+    scenario 'view the question and answers to it', js: true do
       fill_in 'Body', with: 'New answer'
-      click_on 'To answer'
-      expect(page).to have_content 'Your answer successfully created.'
+      click_on 'Create'
 
       fill_in 'Body', with: 'New answer1'
-      click_on 'To answer'
-      expect(page).to have_content 'Your answer successfully created.'
+      click_on 'Create'
 
       fill_in 'Body', with: 'New answer2'
-      click_on 'To answer'
-      expect(page).to have_content 'Your answer successfully created.'
+      click_on 'Create'
 
       expect(page).to have_content question.title
       expect(page).to have_content question.body
@@ -50,9 +46,9 @@ feature 'User can create answer', %q{
   end
 
   describe 'Unauthenticated user' do
-    scenario 'write an answer to the question' do
+    scenario 'can not create an answer' do
       visit question_path(question)
-      expect(page).to_not have_content 'To answer'
+      expect(page).to_not have_content 'Create'
     end
   end
 end

@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_action :question, only: %i[show edit]
+  before_action :question, :answer, only: %i[show edit]
   before_action :authenticate_user!, except: %i[index show]
 
   def index
@@ -7,6 +7,8 @@ class QuestionsController < ApplicationController
   end
 
   def show
+    @best_answer = question.best_answer
+    @other_answers = question.answers.where.not(id: question.best_answer)
   end
 
   def new
@@ -26,11 +28,7 @@ class QuestionsController < ApplicationController
   end
 
   def update
-    if question.update(question_params)
-      redirect_to question
-    else
-      render :edit
-    end
+    question.update(question_params)
   end
 
   def destroy
@@ -44,7 +42,11 @@ class QuestionsController < ApplicationController
     @question ||= params[:id] ? Question.find(params[:id]) : Question.new
   end
 
-  helper_method :question
+  def answer
+    @answer ||= Answer.new
+  end
+
+  helper_method :question, :answer
 
   def question_params
     params.require(:question).permit(:title, :body)
