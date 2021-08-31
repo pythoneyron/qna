@@ -7,7 +7,7 @@ div
       = form.label :body
       = form.text_area :body
 
-      = form.label :file
-      = form.file_field :file
+      = form.label :files
+      = form.file_field :files, multiple: true
 
     = form.submit "Ask"
