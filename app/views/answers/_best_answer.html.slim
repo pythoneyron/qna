@@ -4,6 +4,10 @@
       p= resource.body
       p= 'The best answer'
 
+      - if answer.files.attached?
+        - answer.files.each do |file|
+          p= link_to file.filename.to_s, url_for(file)
+
       - if current_user&.author?(resource)
         p= link_to 'Delete the answer', answer_path(resource), class: 'destroy-answer-link', method: :delete,
                 data: { answer_id: resource.id, remote: true, type: 'json' }
