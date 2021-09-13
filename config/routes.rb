@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :questions, shallow: true do
+  resources :questions do
+    get 'destroy_file/:file_id', to: 'questions#destroy_file', on: :member, as: :destroy_file
     resources :answers, shallow: true do
-      get :mark_as_best
+      get 'destroy_file/:file_id', to: 'answers#destroy_file', on: :member, as: :destroy_file
+      get :mark_as_best, on: :member
     end
   end
 

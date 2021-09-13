@@ -4,6 +4,8 @@ p= question.body
 - if question.files.attached?
   - question.files.each do |file|
     p= link_to file.filename.to_s, url_for(file)
+    p= link_to 'Delete this file', destroy_file_question_path(question, file), class: 'delete-question-file',
+            data: { remote: true, type: 'json' }
 
 - if current_user&.author?(question)
   p= link_to 'Delete the question', question_path(question), method: :delete, data: { question_id: question.id }
@@ -15,6 +17,9 @@ p= question.body
 
   = form.label :body, 'Your body question'
   = form.text_area :body
+
+  = form.label :files
+  = form.file_field :files, multiple: true
 
   = form.submit "Save"
 
