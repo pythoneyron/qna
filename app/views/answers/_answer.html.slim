@@ -13,27 +13,28 @@ id="answer-#{answer.id}"
   - if current_user
     = render 'comments/form_answer', answer: answer
 
-  - if current_user&.author_of?(answer.question)
-    = link_to 'Mark as best',
-            mark_as_best_answer_path(answer),
-            method: :post, remote: true,
-            class: 'btn btn-success btn-sm'
+    - if can? :mark_as_best, answer
+      = link_to 'Mark as best',
+          mark_as_best_answer_path(answer),
+          method: :post, remote: true,
+          class: 'btn btn-success btn-sm'
 
-  - if current_user&.author_of?(answer)
+    - if can? :update, answer
+      = link_to 'Edit', '#', class: 'edit-answer-link btn btn-info btn-sm', data: { answer_id: answer.id }
 
-    = link_to 'Edit', '#', class: 'edit-answer-link btn btn-info btn-sm', data: { answer_id: answer.id }
+    - if can? :destroy, answer
+      = link_to 'Delete answer',
+                  answer_path(answer),
+                  method: :delete,
+                  remote: true,
+                  class: 'btn btn-danger btn-sm'
 
-    = link_to 'Delete answer',
-            answer_path(answer),
-            method: :delete,
-            remote: true,
-            class: 'btn btn-danger btn-sm'
-
-    = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |f|
-      = f.label :body, 'Your answer'
-      = f.text_area :body
-      = f.label :files
-      = f.file_field :files, class: 'form-control', multiple: true, direct_upload: true
-      = render 'links/form', resource: answer, f: f
+    - if can? :update, answer
+      = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |f|
+        = f.label :body, 'Your answer'
+        = f.text_area :body
+        = f.label :files
+        = f.file_field :files, class: 'form-control', multiple: true, direct_upload: true
+        = render 'links/form', resource: answer, f: f
 
       = f.submit 'Save'

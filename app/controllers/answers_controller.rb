@@ -7,8 +7,7 @@ class AnswersController < ApplicationController
   before_action :authenticate_user!
   after_action :publish_answer, only: [:create]
 
-  def edit
-  end
+  authorize_resource
 
   def create
     @answer = question.answers.new(answer_params)
@@ -30,20 +29,26 @@ class AnswersController < ApplicationController
   end
 
   def destroy
-    if current_user.author?(answer)
-      @question = answer.question
-      answer.destroy
+     if authorize! :destroy, answer
+       answer.destroy
+       flash.now[:alert] = 'Your answer deleted'
+       set_question
+     end
+  end
+
+  def update
+    if authorize! :update, answer
+      answer.update(answer_params)
+      set_question
     end
   end
 
   def mark_as_best
-    question = answer.question
-    answer.question.update(best_answer: answer)
-    question.set_best_answer(answer)
-
-    @best_answer = answer
-    @other_answers = question.answers.where.not(id: question.best_answer)
-  end
+    set_question
+    if authorize! :mark_as_best, answer
+      question.set_best_answer(answer)
+    end
+	end
 
   private
 
