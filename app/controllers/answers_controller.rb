@@ -24,14 +24,6 @@ class AnswersController < ApplicationController
     end
   end
 
-  def destroy_file
-    @question = answer.question
-    if current_user.author?(answer)
-      answer.files.find(params[:file_id]).purge
-    end
-    answer.reload
-  end
-
   def mark_as_best
     question = answer.question
     answer.question.update(best_answer: answer)

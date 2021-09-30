@@ -35,13 +35,6 @@ class QuestionsController < ApplicationController
     redirect_to questions_path
   end
 
-  def destroy_file
-    if current_user.author?(question)
-      question.files.find(params[:file_id]).purge
-    end
-    question.reload
-  end
-
   private
 
   def question

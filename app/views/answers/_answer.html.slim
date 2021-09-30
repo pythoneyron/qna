@@ -5,7 +5,7 @@
     - if answer.files.attached?
       - answer.files.each do |file|
         p= link_to file.filename.to_s, url_for(file)
-        p= link_to 'Delete this file', destroy_file_answer_path(answer, file), class: 'delete-question-file',
+        p= link_to 'Delete this file', file_path(file), class: 'delete-question-file', method: :delete,
                 data: { remote: true, type: 'json' }
 
     - if current_user&.author?(answer)
