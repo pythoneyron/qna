@@ -6,9 +6,9 @@ feature 'User can edit his answer', %q{
   I'd like ot be able to edit my answer
 } do
 
-  given!(:user) { create(:user) }
-  given!(:user_author) { create(:user) }
-  given!(:question) { create(:question, author: user_author) }
+  given(:user) { create(:user) }
+  given(:user_author) { create(:user) }
+  given(:question) { create(:question, author: user_author) }
   given!(:answer) { create(:answer, question: question, author: user_author) }
 
   describe 'Authenticated user' do
@@ -32,10 +32,11 @@ feature 'User can edit his answer', %q{
       sign_in(user_author)
       visit question_path(question)
 
-      click_on('Edit the question')
+      click_on('Edit')
 
       within '.answers' do
         fill_in('Your answer', with: '')
+        click_on 'Save'
 
         expect(page).to have_content(answer.body)
         expect(page).to have_content("Body can't be blank")

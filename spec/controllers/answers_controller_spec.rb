@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe AnswersController, type: :controller do
   let(:user) { create(:user) }
   let(:not_author) { create(:user) }
-  let(:question) { FactoryBot.create(:question, author: user) }
-  let(:answer) { FactoryBot.create(:answer, question: question, author: user) }
+  let(:question) { create(:question, author: user) }
+  let(:answer) { create(:answer, question: question, author: user) }
 
   describe 'GET #edit' do
     before { login (user) }
@@ -23,7 +23,7 @@ RSpec.describe AnswersController, type: :controller do
       end
 
       it 'render create template' do
-        post :create, params: { question_id: question, answer: attributes_for(:answer), format: :js }
+        post :create, params: { question_id: question, answer: attributes_for(:answer) }, format: :js
         expect(response).to render_template(:create)
       end
     end
@@ -33,7 +33,7 @@ RSpec.describe AnswersController, type: :controller do
         expect { post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }, format: :js }.to_not change(Answer, :count)
       end
       it 'render create template' do
-        post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid), format: :js }
+        post :create, params: { question_id: question, answer: attributes_for(:answer, :invalid) }, format: :js
         expect(response).to render_template(:create)
       end
     end
@@ -45,18 +45,18 @@ RSpec.describe AnswersController, type: :controller do
 
       context 'with valid attributes' do
         it 'assigns the requested answer to @answer' do
-          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer), format: :js  }
+          patch :update, params: { question_id: question, id: answer, answer: attributes_for(:answer) }, format: :js
           expect(assigns(:answer)).to eq answer
         end
 
         it 'changes answer attributes' do
-          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
           answer.reload
           expect(answer.body).to eq 'new body'
         end
 
         it 'renders update view' do
-          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+          patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
           expect(response).to render_template(:update)
         end
       end
@@ -78,7 +78,7 @@ RSpec.describe AnswersController, type: :controller do
     context 'Not author' do
       before { login(not_author) }
       it 'can not edit another answers' do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
         answer.reload
         expect(answer.body).to eq answer.body
       end
@@ -86,7 +86,7 @@ RSpec.describe AnswersController, type: :controller do
 
     context 'Unauthenticated user' do
       it 'can not edit answers' do
-        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' }, format: :js  }
+        patch :update, params: { question_id: question, id: answer, answer: { body: 'new body' } }, format: :js
         answer.reload
         expect(answer.body).to eq answer.body
       end
@@ -100,26 +100,18 @@ RSpec.describe AnswersController, type: :controller do
       before { login(user) }
 
       it 'deletes the answer' do
-        expect { delete :destroy, params: { id: answer } }.to change(Answer, :count).by(-1)
+        expect { delete :destroy, params: { id: answer }, format: :js }.to change(Answer, :count).by(-1)
       end
 
-      it 'redirect to the question' do
-        delete :destroy, params: { id: answer }
-        expect(response).to redirect_to question_path(question)
-      end
     end
 
     context 'Not author' do
       before { login(not_author) }
 
       it 'try delete the question' do
-        expect { delete :destroy, params: { id: answer } }.to_not change(Answer, :count)
+        expect { delete :destroy, params: { id: answer }, format: :js }.to_not change(Answer, :count)
       end
 
-      it 'redirect to the question' do
-        delete :destroy, params: { id: answer }
-        expect(response).to redirect_to question_path(question)
-      end
     end
 
     context 'Unauthenticated user' do
@@ -130,23 +122,6 @@ RSpec.describe AnswersController, type: :controller do
       it 'redirects to login page' do
         delete :destroy, params: { id: answer }
         expect(response).to redirect_to new_user_session_path
-      end
-    end
-  end
-
-  describe 'GET #mark_as_best' do
-    context 'Author' do
-      before { login(user) }
-
-      it 'mark as best' do
-        expect { get :edit, params: { id: answer }, format: :js }.to eq answer
-      end
-
-    end
-
-    context 'Not author' do
-      it 'try delete the question' do
-        expect { get :edit, params: { id: answer }, format: :js }.to_not change(Answer)
       end
     end
   end

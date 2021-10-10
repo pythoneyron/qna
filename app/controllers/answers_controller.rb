@@ -19,38 +19,23 @@ class AnswersController < ApplicationController
 
   def destroy
     if current_user.author?(answer)
+      @question = answer.question
       answer.destroy
-      message = { notice: 'Your answer successfully deleted.' }
-    else
-      message = { notice: 'You are not the author' }
-    end
-
-    respond_to do |format|
-      format.json do
-        render json: message.to_json
-      end
     end
   end
 
   def mark_as_best
-    answer = Answer.find(params[:answer_id])
     question = answer.question
-    question.update(best_answer_id: answer.id)
+    answer.question.update(best_answer: answer)
 
     @best_answer = answer
     @other_answers = question.answers.where.not(id: question.best_answer)
-
-    respond_to do |format|
-      format.js do
-        render :template => 'answers/mark_as_best.js.erb'
-      end
-    end
   end
 
   private
 
   def answer
-    @answer ||= params[:id] ? Answer.find(params[:id]) : Answer.new
+    @answer ||= params[:id] ? Answer.with_attached_files.find(params[:id]) : Answer.new
   end
 
   def question
@@ -60,7 +45,7 @@ class AnswersController < ApplicationController
   helper_method :question, :answer
 
   def answer_params
-    params.require(:answer).permit(:body)
+    params.require(:answer).permit(:body, files: [])
   end
 
 end
