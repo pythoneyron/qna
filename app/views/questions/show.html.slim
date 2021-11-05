@@ -1,9 +1,17 @@
 p= link_to 'Создать вопрос', new_question_path
 p= link_to 'Создать ответ', new_question_answer_path(question)
 
+p Question:
 .question
  = render question
 
+p Links:
+.links
+ul
+  - @question.links.each do |link|
+    li= link_to link.name, link.url
+
+p Answers:
 .answers
   = render 'answers/best_answer', resource: @best_answer
   = render @other_answers
