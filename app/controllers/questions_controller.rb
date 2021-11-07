@@ -44,6 +44,9 @@ class QuestionsController < ApplicationController
 
   def answer
     @answer ||= Answer.new
+    @answer.links.new
+
+    @answer
   end
 
   helper_method :question, :answer
