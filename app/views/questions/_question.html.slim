@@ -1,26 +1,32 @@
-h1= question.title
-p= question.body
+.card-title.h4 = question.title
+.card-text = question.body
 
-- if question.files.attached?
-  - question.files.each do |file|
-    p= link_to file.filename.to_s, url_for(file)
-    p= link_to 'Delete this file', file_path(file), class: 'delete-question-file', method: :delete,
-            data: { remote: true, type: 'json' }
+div
+  - if question.files.attached?
+    - question.files.each do |file|
+      p= link_to file.filename.to_s, url_for(file)
+      p= link_to 'Delete this file', file_path(file), class: 'delete-question-file btn btn-warning', method: :delete,
+              data: { remote: true, type: 'json' }
 
-- if current_user&.author?(question)
-  p= link_to 'Delete the question', question_path(question), method: :delete, data: { question_id: question.id }
-  p= link_to 'Edit the question', '#', class: 'edit-question-link', data: { question_id: question.id }
+  - if current_user&.author?(question)
+    p= link_to 'Delete the question', question_path(question), method: :delete, data: { question_id: question.id }, class: "btn btn-warning"
+    p= link_to 'Edit the question', '#', class: 'edit-question-link btn btn-primary', data: { question_id: question.id }
 
-= form_with model: question, class: 'hidden', html: { id: "edit-question-#{question.id}" }, local: false do |form|
-  = form.label :title, 'Your title question'
-  = form.text_field :title
+.card-body
+  = form_with model: question, class: 'hidden', html: { id: "edit-question-#{question.id}" }, local: false do |form|
 
-  = form.label :body, 'Your body question'
-  = form.text_area :body
+    .card-title
+      = form.label :title, 'Your title question', class: "form-control"
+      = form.text_field :title, class: "form-control"
 
-  = form.label :files
-  = form.file_field :files, multiple: true
+    .card-title
+      = form.label :body, 'Your body question', class: "form-control"
+      = form.text_area :body, class: "form-control"
 
-  = form.submit "Save"
+    .card-title
+      = form.label :files, class: "form-control"
+      = form.file_field :files, multiple: true, class: "form-control"
+
+    = form.submit "Save", class: "btn btn-outline-primary"
 
 .question-errors
