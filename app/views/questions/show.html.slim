@@ -5,7 +5,7 @@ p = link_to 'Создать ответ', new_question_answer_path(question), cla
   .card-header.h2.text-center Question:
   .card-body
     .question
-     = render question
+      = render question
 
     h4 Links:
     .links
@@ -15,7 +15,7 @@ p = link_to 'Создать ответ', new_question_answer_path(question), cla
 .card
   .card-header.h4.text-center Answers:
   .answers
-    = render 'answers/best_answer', resource: @best_answer
+    = render 'answers/best_answer', resource: @question.best_answer
     = render @other_answers
 
   = render 'answers/form'

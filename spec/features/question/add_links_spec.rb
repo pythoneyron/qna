@@ -7,22 +7,49 @@ feature 'User can add links to question', %q{
 } do
 
   given(:user) { create(:user) }
+  given(:valid_url) { 'https://google.com' }
   given(:gist_url) { 'https://gist.github.com/pythoneyron/2f671860b4916fc7e7efc49636bad7f1' }
+  given(:github_url) { 'https://github.com' }
+  given(:invalid_url) { 'invalid.com' }
 
-  scenario 'User adds link when ask question' do
-    sign_in(user)
-    visit new_question_path
-    # visit questions_path
+  describe 'User adds links', js: true do
+    background {
+      sign_in(user)
+      visit new_question_path
 
-    fill_in 'Title', with: 'Text question'
-    fill_in 'Body', with: 'Text Text Text'
+      fill_in 'Title', with: 'Test question'
+      fill_in 'Body', with: 'text text text'
+      fill_in 'Link name', with: 'My link'
+    }
 
-    fill_in 'Link name', with: 'My gist'
-    fill_in 'Url', with: gist_url
+    scenario ' with valid url when asks question', js: true do
+      fill_in 'Url', with: valid_url
+      click_on 'add link'
+      within '.nested-fields' do
+        fill_in 'Link name', with: 'Github'
+        fill_in 'Url', with: github_url
+      end
 
-    click_on 'Ask'
+      click_on 'Ask'
+      within '.question' do
+        expect(page).to have_link 'My link', href: valid_url
+        expect(page).to have_link 'Github', href: github_url
+      end
+    end
 
-    expect(page).to have_link "My gist", href: gist_url
+    scenario 'with invalid url when asks question', js: true do
+      fill_in 'Url', with: invalid_url
+
+      click_on 'Ask'
+      expect(page).to_not have_link 'My link', href: invalid_url
+      expect(page).to have_content 'is not a valid URL'
+    end
+
+    scenario 'to gist when asks question', js: true do
+      fill_in 'Url', with: gist_url
+      click_on 'Ask'
+
+      expect(page).to have_content 'GET /anything?name=Ivan&age=31&number=1 HTTP/1.1'
+    end
   end
-
 end

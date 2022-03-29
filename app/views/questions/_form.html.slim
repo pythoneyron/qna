@@ -1,5 +1,5 @@
 .card-body
-  = form_with model: question, local: false do |form|
+  = form_with model: question do |form|
     .card-title
       = form.label :title, class: "form-control"
       = form.text_field :title, class: "form-control"
@@ -12,15 +12,7 @@
       = form.label :files
       = form.file_field :files, multiple: true, class: "form-control"
 
-    .text-center.h4.card-title Links:
-    = form.fields_for :links do |l|
-
-      .card-title
-        = l.label :name, 'Link name'
-        = l.text_field :name, class: "form-control"
-
-      .card-title
-        = l.label :url
-        = l.text_field :url, class: "form-control"
+    = render 'links/form', resource: question, form: form
+    = render 'reward_form', form: form
 
     = form.submit "Ask", class: "btn btn-outline-primary"

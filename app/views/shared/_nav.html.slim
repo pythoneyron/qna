@@ -3,6 +3,7 @@
 - if user_signed_in?
   p
     = current_user.email
+    = link_to 'Rewards', rewards_user_path(current_user), class: 'btn mt-3'
 
   .btn-group
     p = link_to 'sign out', destroy_user_session_path, class: "btn btn-outline-primary", method: :delete

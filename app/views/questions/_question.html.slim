@@ -1,6 +1,8 @@
 .card-title.h4 = question.title
 .card-text = question.body
 
+= render 'links/link', resource: question
+
 div
   - if question.files.attached?
     - question.files.each do |file|
@@ -9,8 +11,8 @@ div
               data: { remote: true, type: 'json' }
 
   - if current_user&.author?(question)
-    p= link_to 'Delete the question', question_path(question), method: :delete, data: { question_id: question.id }, class: "btn btn-warning"
-    p= link_to 'Edit the question', '#', class: 'edit-question-link btn btn-primary', data: { question_id: question.id }
+    p= link_to 'Delete question', question_path(question), method: :delete, data: { question_id: question.id }, class: "btn btn-warning"
+    p= link_to 'Edit question', '#', class: 'edit-question-link btn btn-primary', data: { question_id: question.id }
 
 .card-body
   = form_with model: question, class: 'hidden', html: { id: "edit-question-#{question.id}" }, local: false do |form|
@@ -25,7 +27,9 @@ div
 
     .card-title
       = form.label :files, class: "form-control"
-      = form.file_field :files, multiple: true, class: "form-control"
+      = form.file_field :files, multiple: true, class: "form-control", direct_upload: true
+
+    = render 'links/form', resource: question, form: form
 
     = form.submit "Save", class: "btn btn-outline-primary"
 
