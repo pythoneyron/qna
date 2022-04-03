@@ -1,13 +1,18 @@
-div
-  = form_with model: question, local: false do |form|
-    div
-      = form.label :title
-      = form.text_field :title
+.card-body
+  = form_with model: question do |form|
+    .card-title
+      = form.label :title, class: "form-control"
+      = form.text_field :title, class: "form-control"
 
-      = form.label :body
-      = form.text_area :body
+    .card-title
+      = form.label :body, class: "form-control"
+      = form.text_area :body, class: "form-control"
 
+    .card-title
       = form.label :files
-      = form.file_field :files, multiple: true
+      = form.file_field :files, multiple: true, class: "form-control"
 
-    = form.submit "Ask"
+    = render 'links/form', resource: question, form: form
+    = render 'reward_form', form: form
+
+    = form.submit "Ask", class: "btn btn-outline-primary"

@@ -9,4 +9,7 @@ div
       = form.label :files
       = form.file_field :files, multiple: true
 
+    .answer-links
+      = render 'links/form', resource: @answer, form: form
+
     = form.submit "Create"

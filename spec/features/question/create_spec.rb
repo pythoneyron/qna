@@ -9,6 +9,18 @@ feature 'User can create question', %q{
   given(:user) { create(:user) }
   given!(:questions) { create_list(:question, 5, author: user) }
 
+  scenario 'asks a question with reward' do
+    fill_in 'Title', with: 'Test question'
+    fill_in 'Body', with: 'text text text'
+
+    within '.reward' do
+      fill_in 'Reward name', with: 'My reward'
+      attach_file 'Image', "#{Rails.root}/app/assets/images/reward.png"
+    end
+    click_on 'Ask'
+    expect(Question.last.reward).to eq Reward.last
+  end
+
   describe 'Authenticated user' do
     background do
       sign_in(user)

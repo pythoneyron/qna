@@ -27,6 +27,7 @@ class AnswersController < ApplicationController
   def mark_as_best
     question = answer.question
     answer.question.update(best_answer: answer)
+    question.set_best_answer(answer)
 
     @best_answer = answer
     @other_answers = question.answers.where.not(id: question.best_answer)
@@ -45,7 +46,7 @@ class AnswersController < ApplicationController
   helper_method :question, :answer
 
   def answer_params
-    params.require(:answer).permit(:body, files: [])
+    params.require(:answer).permit(:body, files: [], links_attributes: [:name, :url, :_destroy, :id])
   end
 
 end

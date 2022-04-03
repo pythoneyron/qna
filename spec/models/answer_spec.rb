@@ -3,7 +3,12 @@ require 'rails_helper'
 RSpec.describe Answer, type: :model do
   describe 'associations' do
     it { should belong_to :question }
+    it { should have_many(:links).dependent(:destroy) }
     it { should belong_to(:author).class_name('User') }
+  end
+
+  describe 'nested attributes' do
+    it { should accept_nested_attributes_for :links }
   end
 
   describe 'validations' do

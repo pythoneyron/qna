@@ -2,18 +2,22 @@
   - if answer.persisted?
     p= answer.body
 
+    = render 'links/link', resource: answer
+
     - if answer.files.attached?
       - answer.files.each do |file|
         p= link_to file.filename.to_s, url_for(file)
         p= link_to 'Delete this file', file_path(file), class: 'delete-question-file', method: :delete,
                 data: { remote: true, type: 'json' }
 
+    - if current_user&.author_of?(answer.question)
+      p= link_to 'Mark as best', mark_as_best_answer_path(answer), class: 'mark-best-answer-link',
+              data: { remote: true, type: 'json' }
+
     - if current_user&.author?(answer)
       p= link_to 'Delete the answer', answer_path(answer), class: 'destroy-answer-link', method: :delete,
               data: { remote: true, type: 'json'}
       p= link_to 'Edit', '#', class: 'edit-answer-link', data: { answer_id: answer.id }
-      p= link_to 'Mark as best', mark_as_best_answer_path(answer), class: 'mark-best-answer-link',
-              data: { remote: true, type: 'json' }
 
       = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false do |form|
         = form.label :body, 'Your answer'
@@ -21,5 +25,7 @@
 
         = form.label :files
         = form.file_field :files, multiple: true
+
+        = render 'links/form', resource: answer, form: form
 
         = form.submit 'Save'

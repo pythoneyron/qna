@@ -4,6 +4,8 @@
       p= resource.body
       p= 'The best answer'
 
+      = render 'links/link', resource: resource
+
       - if answer.files.attached?
         - answer.files.each do |file|
           p= link_to file.filename.to_s, url_for(file)
