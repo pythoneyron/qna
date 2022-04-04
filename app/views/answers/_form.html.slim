@@ -1,7 +1,7 @@
 .answer-errors
 
 div
-  = form_with model: [question, answer], class: 'new-answer', local: false do |form|
+  = form_with model: [question, answer], class: 'new-answer', data: { type: :json } do |form|
     div
       = form.label :body
       = form.text_area :body

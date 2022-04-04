@@ -1,8 +1,9 @@
 .links
-  p Links:
-  ul
-    - resource.links.each do |link|
-      .id="link_#{link.id}"
+  - if resource.links.present?
+    p Links:
+    ul
+      - resource.links.each do |link|
+        id="link_#{link.id}"
         - if link.gist?
           li= link_to link.name, link.url, target: '_blank'
           - link.read_gist.each do |file, content|

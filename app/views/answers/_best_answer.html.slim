@@ -4,6 +4,7 @@
       p= resource.body
       p= 'The best answer'
 
+      = render 'shared/vote', resource: answer
       = render 'links/link', resource: resource
 
       - if answer.files.attached?
