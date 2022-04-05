@@ -2,9 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Answer, type: :model do
   describe 'associations' do
+    it_behaves_like 'votable'
+
     it { should belong_to :question }
     it { should have_many(:links).dependent(:destroy) }
     it { should belong_to(:author).class_name('User') }
+    it { should have_many(:votes).dependent(:destroy) }
   end
 
   describe 'nested attributes' do
