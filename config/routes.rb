@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   devise_for :users
+
+  root to: 'questions#index'
+
   concern :voted do
     member do
       put :vote_for
@@ -8,22 +11,27 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :questions, concerns: :voted do
-    resources :answers, concerns: :voted, shallow: true do
-      get :mark_as_best, on: :member
+  concern :commented do
+    member do
+      post :create_comment
     end
   end
 
-  resources :files, only: %i[destroy]
-
-  root to: 'questions#index'
+  resources :questions, concerns: [:voted, :commented] do
+    resources :answers, only: %i[create destroy update], concerns: [:voted, :commented], shallow: true do
+      member do
+        post :mark_as_best
+      end
+    end
+  end
 
   resources :attachments, only: :destroy
   resources :links, only: :destroy
-
   resources :users, only: :rewards do
     member do
       get :rewards
     end
   end
+
+  mount ActionCable.server => '/cable'
 end

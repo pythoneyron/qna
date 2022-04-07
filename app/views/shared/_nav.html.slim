@@ -1,16 +1,11 @@
-.btn-group
-  = link_to 'QNA', root_path, class: "btn btn-outline-primary"
-- if user_signed_in?
-  p
-    = current_user.email
-    = link_to 'Rewards', rewards_user_path(current_user), class: 'btn mt-3'
 
-  .btn-group
-    p = link_to 'sign out', destroy_user_session_path, class: "btn btn-outline-primary", method: :delete
-- else
-
-  .btn-group
-    = link_to 'sign in', :new_user_session, class: "btn btn-outline-primary"
-
-  .btn-group
-    = link_to 'sign up', :new_user_registration, class: "btn btn-outline-primary"
+.navbar.navbar-light.bg-light
+  .container
+    - if current_user
+      p= link_to 'QnA', root_path, class: 'btn mt-3'
+      = current_user.email
+      p= link_to 'Rewards', rewards_user_path(current_user), class: 'btn mt-3'
+      p= link_to 'Log out', destroy_user_session_path, method: :delete, class: 'btn mt-3'
+    - else
+      p= link_to 'sign in', :new_user_session, class: 'btn mt-3'
+      p= link_to 'registration', :new_user_registration, class: 'btn mt-3'

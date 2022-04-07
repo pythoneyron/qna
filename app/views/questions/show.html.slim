@@ -1,23 +1,38 @@
-p = link_to 'Создать вопрос', new_question_path, class: "btn btn-outline-primary"
-p = link_to 'Создать ответ', new_question_answer_path(question), class: "btn btn-outline-primary"
+.question id="question-#{question.id}"
+  h2= question.title
+  h3= question.body
 
-.card
-  .card-header.h2.text-center Question:
-  .card-body
-    .question
-      = render question
+  = render 'shared/vote', resource: question
+  = render 'links/link', resource: question
+  = render 'shared/attachments', resource: question
 
-    h4 Links:
-    .links
-    ul
-      - @question.links.each do |link|
-        li= link_to link.name, link.url
-.card
-  .card-header.h4.text-center Answers:
-  .answers
-    = render 'answers/best_answer', resource: @question.best_answer
-    = render @other_answers
+  .question-comments
+    h4 Comments:
+    = render question.comments
+  - if current_user
+    = render 'comments/form_question', resource: question
 
-  = render 'answers/form'
+.answers
+  h3 Answers
+  - if @question.answers.any?
+    - if @question.best_answer
+      = render 'answers/best_answer', resource: @question.best_answer
+    = render @question.answers
 
-= link_to 'назад', questions_path
+- if user_signed_in?
+  h4 Create new answer
+  .answer-errors
+    = render 'shared/errors', resource: @answer
+
+  = form_with model: [@question, @answer], class: 'new-answer', data: { type: :json }, local: false do |f|
+
+    = f.label :body, 'Your answer'
+    = f.text_area :body, class: 'form-control'
+
+    = f.label :files
+    br= f.file_field :files, class: 'form-control', multiple: true, direct_upload: true
+
+    .answer-links
+      = render 'links/form', resource: @answer, f: f
+
+    = f.submit 'Answer'
