@@ -1,9 +1,11 @@
 class AnswersController < ApplicationController
   include Voted
+  include Commented
 
   before_action :answer, only: %i[edit update destroy]
   before_action :question, only: %i[create new]
   before_action :authenticate_user!
+  after_action :publish_answer, only: [:create]
 
   def edit
   end
@@ -44,6 +46,16 @@ class AnswersController < ApplicationController
   end
 
   private
+
+  def publish_answer
+    return if answer.errors.any?
+    ActionCable.server.broadcast("answers/#{params[:question_id]}",
+      ApplicationController.render(
+        partial: 'answers/answer_channel',
+        locals: { question: answer.question, answer: answer, current_user: current_user }
+      )
+    )
+  end
 
   def answer
     @answer ||= params[:id] ? Answer.with_attached_files.find(params[:id]) : Answer.new

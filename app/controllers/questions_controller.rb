@@ -1,7 +1,9 @@
 class QuestionsController < ApplicationController
   include Voted
+  include Commented
 
   before_action :authenticate_user!, except: %i[index show]
+  after_action :publish_question, only: [:create]
 
   def index
     @questions = Question.all
@@ -10,6 +12,7 @@ class QuestionsController < ApplicationController
   def show
     @best_answer = question.best_answer
     @other_answers = question.answers.where.not(id: question.best_answer)
+    gon.push({question_id: question.id})
   end
 
   def new
@@ -60,6 +63,18 @@ class QuestionsController < ApplicationController
       :body, files: [],
       links_attributes: [:name, :url, :_destroy, :id],
       reward_attributes: [:name, :image]
+    )
+  end
+
+  def publish_question
+    return if question.errors.any?
+
+    ActionCable.server.broadcast(
+      'questions_channel',
+      ApplicationController.render(
+        partial: 'questions/question_channel',
+        locals: { question: @question }
+      )
     )
   end
 end
