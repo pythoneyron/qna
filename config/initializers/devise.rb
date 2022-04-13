@@ -277,11 +277,11 @@ Devise.setup do |config|
                   Rails.application.credentials[Rails.env.to_sym][:github][:app_secret],
                   scope: 'user:email, read:user'
 
-  config.omniauth :vkontakte,
-                  Rails.application.credentials.vkontakte[:app_id],
-                  Rails.application.credentials.vkontakte[:app_secret],
-                  scope: [:email],
-                  redirect_uri: Rails.application.credentials.vkontakte[:app_uri]
+  # config.omniauth :vkontakte,
+  #                 Rails.application.credentials.vkontakte[:app_id],
+  #                 Rails.application.credentials.vkontakte[:app_secret],
+  #                 scope: [:email],
+  #                 redirect_uri: Rails.application.credentials.vkontakte[:app_uri]
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
