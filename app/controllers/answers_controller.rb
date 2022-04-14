@@ -7,8 +7,7 @@ class AnswersController < ApplicationController
   before_action :authenticate_user!
   after_action :publish_answer, only: [:create]
 
-  def edit
-  end
+  authorize_resource
 
   def create
     @answer = question.answers.new(answer_params)
@@ -25,24 +24,28 @@ class AnswersController < ApplicationController
   end
 
   def update
-    answer.update(answer_params)
-    @question = answer.question
+    if authorize! :update, answer
+      answer.update(answer_params)
+      @question = answer.question
+    end
   end
 
   def destroy
-    if current_user.author?(answer)
+    if authorize! :destroy, answer
       @question = answer.question
       answer.destroy
     end
   end
 
   def mark_as_best
-    question = answer.question
-    answer.question.update(best_answer: answer)
-    question.set_best_answer(answer)
+    if authorize! :mark_as_best, answer
+      question = answer.question
+      answer.question.update(best_answer: answer)
+      question.set_best_answer(answer)
 
-    @best_answer = answer
-    @other_answers = question.answers.where.not(id: question.best_answer)
+      @best_answer = answer
+      @other_answers = question.answers.where.not(id: question.best_answer)
+    end
   end
 
   private
