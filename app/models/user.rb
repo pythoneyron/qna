@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :answers, dependent: :destroy
   has_many :rewards, dependent: :destroy
   has_many :votes, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 
   def self.find_for_oauth(auth)
     Services::FindForOauth.new(auth).call
@@ -21,5 +22,9 @@ class User < ApplicationRecord
 
   def create_authorization(auth)
     self.authorizations.create(provider: auth.provider, uid: auth.uid.to_s)
+  end
+
+  def subscribed?(question)
+    subscriptions.where(question: question).exists?
   end
 end

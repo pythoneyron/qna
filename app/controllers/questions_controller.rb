@@ -3,6 +3,7 @@ class QuestionsController < ApplicationController
   include Commented
 
   before_action :authenticate_user!, except: %i[index show]
+  before_action :find_subsription, only: [:show, :edit]
   after_action :publish_question, only: [:create]
 
   authorize_resource
@@ -40,6 +41,7 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
+    question.destroy if authorize! :destroy, question
     question.destroy if authorize! :update, question
     redirect_to questions_path
   end
@@ -66,6 +68,10 @@ class QuestionsController < ApplicationController
       links_attributes: [:name, :url, :_destroy, :id],
       reward_attributes: [:name, :image]
     )
+  end
+
+  def find_subsription
+    @subscription = question.subscriptions.find_by(user: current_user)
   end
 
   def publish_question
