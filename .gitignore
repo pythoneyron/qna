@@ -44,3 +44,6 @@ yarn-debug.log*
 .idea
 nodesource_setup.sh
 /dump.rdb
+
+/config/*.sphinx.conf
+/db/sphinx
