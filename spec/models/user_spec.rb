@@ -1,42 +1,54 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  describe 'associations' do
-    it { should have_many(:questions).dependent(:destroy) }
-    it { should have_many(:answers).dependent(:destroy) }
-    it { should have_many(:votes).dependent(:destroy) }
-    it { should have_many(:rewards).dependent(:destroy) }
-    it { should have_many(:authorizations).dependent(:destroy) }
-  end
+  it { should have_many(:questions).dependent(:destroy) }
+  it { should have_many(:answers).dependent(:destroy) }
+  it { should have_many(:votes).dependent(:destroy) }
+  it { should have_many(:rewards).dependent(:destroy) }
+  it { should have_many(:authorizations).dependent(:destroy) }
+  it { should have_many(:subscriptions).dependent(:destroy) }
 
-  describe 'validations' do
-    it { should validate_presence_of :email }
-    it { should validate_presence_of :password }
-  end
+  it { should validate_presence_of :email }
+  it { should validate_presence_of :password }
 
-  describe 'Check for the author' do
-    let(:user_author) { create(:user) }
-    let(:user) { create(:user) }
-    let(:question) { create(:question, author: user_author) }
+  let(:user) { create(:user) }
+  let(:author) { create(:user) }
 
-    it 'current user is the author' do
-      expect(user_author).to be_author(question)
-    end
-
-    it 'current user is not the author' do
-      expect(user).to_not be_author(question)
-    end
-  end
-
-  describe '.find_for_oauth' do
-    let!(:uesr) { create(:user) }
-    let(:auth) { OmniAuth::AuthHash.new(provider: 'facebook', uid: '123') }
+  describe  '.find_for_oauth' do
+    let!(:user) { create(:user) }
+    let(:auth) { OmniAuth::AuthHash.new(provider: 'github', uid: '123456') }
     let(:service) { double('Services::FindForOauth') }
 
-    it 'call Services::FindForOauth' do
-      expect(Services::FindForOauth).to receive(:new).with(auth).and_return(service)
+    it "calls Services::FindForOauth" do
+      expect(FindForOauthService).to receive(:new).with(auth).and_return(service)
       expect(service).to receive(:call)
       User.find_for_oauth(auth)
+    end
+  end
+
+  describe 'The user' do
+    let(:question) { create(:question, author: author) }
+
+    context '#author_of?' do
+      it 'is an author' do
+        expect(author).to be_author_of(question)
+      end
+
+      it 'is not an author' do
+        expect(user).to_not be_author_of(question)
+      end
+    end
+
+    context '#subscribed?' do
+      let!(:subscription) { create(:subscription, question: question, user: author) }
+
+      it 'is an subscriber' do
+        expect(author).to be_subscribed(question)
+      end
+
+      it 'is not subscriber' do
+        expect(user).to_not be_subscribed(question)
+      end
     end
   end
 end
